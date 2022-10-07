@@ -33,8 +33,6 @@ def solution2(gems):  # 시간초과
 
 # two-pointer 활용
 from collections import deque
-
-
 def solution3(gems):
     answer = []
     gemkind = len(set(gems))
@@ -58,55 +56,48 @@ def solution3(gems):
 
 
 from collections import deque, Counter
-
-
-def solution(gems):  # 이진탐색 + sliding window
-    answer = []
-    l = len(set(gems))
-    start, end = l, len(gems)
-    bestidx = [0, len(gems) - 1]
-
+def solution(gems): #이진탐색 + sliding window
+    answer = [] ; l = len(set(gems)) ; start, end = l, len(gems) ; bestidx = [0, len(gems)-1]
+    
     def windowSlide(k):
-        deq = deque(gems[bestidx[0] : bestidx[0] + k])
+        deq = deque(gems[bestidx[0]:bestidx[0] + k])
         deqdic = dict(Counter(deq))
         idx = bestidx[0] + k - 1
         while True:
             # print(deq, deqdic)
             try:
                 if len(deqdic) == l:
-                    bestidx[0], bestidx[1] = idx - mid + 1, idx
-                    return True, [idx + 2 - k, idx + 1]
+                    bestidx[0], bestidx[1] = idx - mid+1, idx
+                    return True, [idx+2-k, idx+1]
                 else:
-                    for _ in range(l - len(set(deqdic))):
+                    for _ in range(l-len(deqdic)):
                         element = deq.popleft()
                         deqdic[element] -= 1
-                        if deqdic[element] == 0:
-                            deqdic.pop(element)
-                        deq.append(gems[idx + 1])
+                        if deqdic[element] == 0: deqdic.pop(element)
+                        deq.append(gems[idx+1])
                         try:
-                            deqdic[gems[idx + 1]] += 1
+                            deqdic[gems[idx+1]] += 1
                         except:
-                            deqdic[gems[idx + 1]] = 1
+                            deqdic[gems[idx+1]] = 1
                         idx += 1
-            except:
+            except: 
                 break
         return False, []
 
     while True:
         mid = int((start + end) / 2)
         # print(start, mid, end, bestidx)
-        if start == end:
+        if start == end: 
             _, answer = windowSlide(start)
             break
         isp, temp = windowSlide(mid)
         # print(isp, temp)
-        if temp != []:
-            answer = temp
+        if temp != []: answer = temp
         if isp:
             end = mid
         else:
-            start = mid + 1
-
+            start = mid+1
+    
     return answer
 
 
