@@ -1,8 +1,6 @@
 import re
-
-
+from collections import deque
 def solution(user_id, banned_id):
-    answer = []
     dic = [[] for x in banned_id]
 
     for i in range(len(banned_id)):
@@ -14,32 +12,27 @@ def solution(user_id, banned_id):
                 dic[i].append(re.search(replstr, id)[0])
             except:
                 pass
-
-    # for i in range(len(dic)):
-    #     dic[i] = list(set(dic[i]))
-
     # print(dic)
-    def recur(arr):
-        if len(arr) == 1:
-            return [[x] for x in arr[0]]
-        temp = []
-        for word in arr[0]:
-            for array in recur(arr[1:]):
-                if word in array:
-                    continue
-                else:
-                    temp.append([word] + array)
-        return temp
+    
+    deq = deque([[] for x in dic[0]])
+    i=1
+    while True:
+        wordset = deq.popleft()
+        try:
+            for w in dic[len(wordset)]:
+                if w not in wordset:
+                    deq.append(wordset + [w])
+            # print(deq)
+        except:
+            deq.append(wordset)
+            break
 
-    answer = recur(dic)
-    # print(answer)
-
-    answerset = []
-    for x in answer:
-        if set(x) not in answerset:
-            answerset.append(set(x))
-    # print(answerset)
-    return len(answerset)
+    # print(deq)
+    answer = set()
+    for arr in deq:
+        if len(frozenset(arr)) == len(banned_id):
+            answer.add(frozenset(arr))
+    return len(answer)
 
 
 print(solution(["frodo", "fradi", "crodo", "abc123", "frodoc"], ["fr*d*", "abc1**"]), 2)
