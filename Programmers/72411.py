@@ -3,18 +3,40 @@
 from itertools import combinations
 def solution(orders, course):
     answer = []
-    dic = {}
-    for coursenumber in course:
-        for order in orders:
-            for menu in combinations(order, coursenumber): 
-                try: dic["".join(menu)] += 1
-                except: dic["".join(menu)] = 1
-    print(dic)
-    for d in dic:
-        if dic[d] in course: answer.append(d)
-    # print(answer)
-    return answer
+    def isinmenu(menu, bigmenu):
+        for m in menu:
+            if m not in bigmenu: return False
+        return True
+    
+    def isincludedmenu(menu, list):
+        for bigmenu in list:
+            if isinmenu(menu, bigmenu): return True
+        return False
 
-print(solution(	["ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"], [2, 3, 4]), [2, 3, 4])
-# print(solution(	["ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"], [2, 3, 5]), [2, 3, 5])
-# print(solution(["XYZ", "XWY", "WXA"], [2, 3, 4]), [2, 3, 4])
+    while course:
+        temp = []; maxnum = 0
+        cnum = course.pop()
+        for order in orders:
+            if len(order) < cnum: continue
+            for menu in combinations(order, cnum):
+                menu = ''.join(menu)
+                # print(list(map(isinmenu, [menu]*len(orders), orders)), menu)
+                # print(f"Is {menu} in {answer}?")
+                menucount = list(map(isinmenu, [menu]*len(orders), orders)).count(True)
+                if menucount >= 2 and isincludedmenu(menu, temp) == False:
+                    # print(menu, menucount)
+                    if menucount > maxnum:
+                        maxnum = menucount
+                        temp = [''.join(sorted(menu))]
+                    elif menucount == maxnum:
+                        temp.append(''.join(sorted(menu)))
+                    else:
+                        pass
+        # print(temp)
+        answer += temp
+    return sorted(answer)
+
+# print(solution(	["ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"], [2, 3, 4]), ["AC", "ACDE", "BCFG", "CDE"])
+# print(solution(	["ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"], [2, 3, 4]), ["AC", "ACDE", "BCFG", "CDE"])
+print(solution(	["ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"], [2, 3, 5]), ["ACD", "AD", "ADE", "CD", "XYZ"])
+# print(solution(["XYZ", "XWY", "WXA"], [2, 3, 4]), 	["WX", "XY"])
