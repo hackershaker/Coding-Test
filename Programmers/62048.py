@@ -32,7 +32,7 @@ def solution3(w, h):
     return int(temp)
 
 import math
-def solution(w, h):
+def solution4(w, h):
     answer = 0
     gi = h / w
     if w == h:
@@ -48,6 +48,23 @@ def solution(w, h):
             temp += int(gi * i) * 2
         temp = temp * gcd + (gcd-1)*w*h/(2*gcd) * 2
         return int(temp)
+
+import math
+def solution(w, h):
+    gcd = math.gcd(w, h)
+    answer = 0
+    if w < h:
+        gi = h / w
+        for i in range(1, int(w/gcd)):
+            answer += int(gi * i)
+        return answer*gcd*2 + int((gcd-1)/gcd * h * w /2) * 2
+    elif w == h:
+        return int(w*(w-1))
+    else:
+        gi = w / h
+        for i in range(1, int(h/gcd)):
+            answer += int(gi * i)
+        return answer*gcd*2 + int((gcd-1)/gcd * h * w /2) * 2
     
 print(solution(	8, 12 ), 80)
 print(solution(	2, 3 ), 2)
@@ -62,4 +79,4 @@ print(solution(	1, 1 ), 0)
 print(solution(	2, 10 ), 10)
 print(solution(	4, 9 ), 24)
 print(solution(	100000000, 100000000 ), 24)
-print(solution(	100000000, 99999999 ), 24)
+# print(solution(	100000000, 99999999 ), 24)
