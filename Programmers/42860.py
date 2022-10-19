@@ -22,11 +22,11 @@ def solution(name):
 
     initword = [name[0]] + ["A"]*(len(name)-1); idx=0; answer = change("A", name[0])
     name = list(name)
-    print(initword, "idx: ", idx, "answer: ", answer)
+    # print(initword, "idx: ", idx, "answer: ", answer)
     while initword != name:
         left = findleft(initword, idx)
         right = findright(initword, idx)
-        print("left:", left, "right:", right)
+        # print("left:", left, "right:", right)
         if abs(left) < right:
             idx = (idx + left + len(name))%len(name)
             answer += abs(left) + change(initword[idx], name[idx])
@@ -35,7 +35,7 @@ def solution(name):
             answer += right + change(initword[idx], name[idx])
 
         initword[idx] = name[idx]
-        print(initword, "idx: ", idx, "answer: ", answer)
+        # print(initword, "idx: ", idx, "answer: ", answer)
 
     return answer
 
@@ -64,3 +64,12 @@ def solution(name):
 print(solution("AAIAPB"), 24)
 print(solution("DYAOAAAARQANAWA"), 66)
 print(solution("ASWAAATDAJAXA"), 45)
+print(solution("BADADC"), 1+3+4+5)
+print(solution("BADDAC"), 1+3+4+5)
+print(solution("BADADAC"), 1+3+4+5)
+print(solution("ABADADAC"), 1+3+4+5)
+print(solution("AAABBAAAABBAAAAAAA"), 4+2+6+2)
+print(solution("AABBBAAAABBAAAABA"), 3+6+2+6+2+2)
+# print(solution("ABABAAAAAAABA"), 10)
+# print(solution("AZAAAAAAZAZA"), 2+4+3)
+# print(solution("AZAAZAAAZAZA"), 2+4+3)
