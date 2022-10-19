@@ -19,18 +19,46 @@ def solution2(sticker):
 from collections import deque
 def solution(sticker):
     answer = 0
+    dic = {}
     deq = deque(sticker)
 
-    def getMaxValue(n, deq):
-        idx = deq.index(n)
-        if idx == 0:
-            deq.rotate(1)
-            deq[0], deq[1], deq[2] = -1, -1, -1
-        elif idx == len(deq)-1:
-            deq.rotate(-1)
-            deq[-1], deq[-2], deq[-3] = -1, -1, -1
-        else:
-            deq[idx-1], deq[idx], deq[idx+1] = -1, -1, -1
+    def zerocut(i):
+        if i < 0: return 0
+        return i
 
+    def getMaxValue(list):
+        maxvalue = 0
+        stack = []
+        for i in range(len(list)):
+            stack.append([list[i], list[i+2:]+list[:zerocut(i-1)]])
 
-print(solution2([14, 6, 5, 11, 3, 9, 2, 10]), 36)
+        while stack:
+            print(stack)
+            pops, lefts = stack[-1]
+            if len(lefts) == 0:
+                dic[tuple(stack[-1])] = pops
+            elif len(lefts) == 1:
+                dic[tuple(stack[-1])] = pops + lefts[0]
+            elif len(lefts) == 2:
+                dic[tuple(stack[-1])] = pops + max(lefts)
+            else:
+                pass
+
+            try:
+                dic[tuple(stack[-1])] = pops + dic[tuple(lefts)]
+                max(maxvalue, dic[tuple(stack[-1])])
+                stack.pop()
+            except:
+                for i in range(len(lefts)):
+                    stack.append([lefts[i], lefts[i+2:]+lefts[:zerocut(i-1)]])
+
+        return maxvalue
+
+    for i in range(len(sticker)):
+        if i == 0: answer = max(answer, sticker[0] + getMaxValue(sticker[2:-1]))
+        elif i == len(sticker)-1: answer = max(answer, sticker[-1] + getMaxValue(sticker[1:-2]))
+        else: answer = max(answer, sticker[i] + getMaxValue(sticker[i+2:]+sticker[:i-1]))
+    print(dic)
+    return answer
+
+print(solution([14, 6, 5, 11, 3, 9, 2, 10]), 36)
