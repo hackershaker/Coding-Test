@@ -15,6 +15,23 @@ def solution(k):
     print(list[k-1])
     return list[k-1]
 
+def sol(k, numlist):
+    if numlist[k-1] or k == 1:
+        return numlist[k-1]
+    temp = []
+    r3, r2 = k%3, k%2
+    if r3==0:
+        temp.append(sol(int(k/3), numlist))
+    if r2==0:
+        temp.append(sol(int(k/2), numlist))
+    if r2 != 0 or r3 != 0:
+        temp.append(sol(k-1, numlist))
+
+    numlist[k-1] = min(temp)+1
+    return numlist[k-1]
+
 if __name__=="__main__":
     n = int(input())
-    solution(n)
+    numlist = [0,1] + [0] * (10**6-2)
+    answer = sol(n, numlist=numlist)
+    print(answer)
