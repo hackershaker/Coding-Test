@@ -6,6 +6,7 @@ p1463 = importlib.import_module("1463")
 class Testclass(TestCase):
     def test8958(self):
         testcase = [
+            (1,0),
             (2,1),
             (3,1),
             (4,2),
@@ -34,10 +35,20 @@ class Testclass(TestCase):
             (31,5),
             (32,5),
             (33,5),
+            (34,6),
+            (35,7),
+            (36,4),
+            (37,5),
+            (38,5),
+            (39,5),
+            (40,5),
+            (41,6),
+            (42,5),
+            (42,5),
         ]
-
+        self.numlist = [0] * 10**6
         for case, answer in testcase:
-            self.assertEqual(p1463.solution(case), answer, f"{case}, {answer}")
+            self.assertEqual(p1463.sol(case, self.numlist), answer, f"{case}, {answer}")
 
 if __name__=="__main__":
     main()
