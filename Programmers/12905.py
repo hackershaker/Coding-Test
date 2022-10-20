@@ -30,8 +30,7 @@ def solution2(board):
 
     return answer
 
-
-def solution(board):
+def solution3(board):
     answer = 0
     dic = {(str(x)+str(y))*2: True if board[x][y] == 1 else False for x in range(len(board)) for y in range(len(board[0]))}
     print(dic)
@@ -62,6 +61,63 @@ def solution(board):
 
     return answer
 
+def solution(board): # Dynamic Programming & Binary search
+    dic = {}
+    def issquare(ordtuple: tuple) -> bool:
+        lu = [ordtuple[0], ordtuple[1]]
+        rd = [ordtuple[2], ordtuple[3]]
+
+        if lu == rd:
+            if dic.get(ordtuple, None):
+                return dic[ordtuple]
+            else:
+                dic[ordtuple] = True if board[lu[0]][lu[1]] == 1 else False
+                return dic[ordtuple]
+
+        mid = int((rd[0]-lu[0])/2)
+
+        if (rd[0]-lu[0]+1)%2 == 0:
+            if any(issquare(x)==False for x in [(lu[0],lu[1],lu[0]+mid,lu[1]+mid),(lu[0],lu[1]+mid+1,lu[0]+mid,rd[1]),(lu[0]+mid+1,lu[1],rd[0],lu[1]+mid),(lu[0]+mid+1,lu[1]+mid+1,rd[0],rd[1])]):
+                dic[ordtuple] = False
+            else:
+                dic[ordtuple] = True
+            # print((lu[0],lu[1],lu[0]+mid,lu[1]+mid),(lu[0],lu[1]+mid+1,lu[0]+mid,rd[1]),(lu[0]+mid+1,lu[1],rd[0],lu[1]+mid),(lu[0]+mid+1,lu[1]+mid+1,rd[0],rd[1]))
+            # dic[ordtuple] = issquare((lu[0],lu[1],lu[0]+mid,lu[1]+mid)) and issquare((lu[0],lu[1]+mid+1,lu[0]+mid,rd[1])) and issquare((lu[0]+mid+1,lu[1],rd[0],lu[1]+mid)) and issquare((lu[0]+mid+1,lu[1]+mid+1,rd[0],rd[1]))
+        else:
+            if any(issquare(x)==False for x in [(lu[0],lu[1],lu[0]+mid,lu[1]+mid),(lu[0],lu[1]+mid,lu[0]+mid,rd[1]),(lu[0]+mid,lu[1],rd[0],lu[1]+mid),(lu[0]+mid,lu[1]+mid,rd[0],rd[1])]):
+                dic[ordtuple] = False
+            else:
+                dic[ordtuple] = True
+            # dic[ordtuple] = issquare((lu[0],lu[1],lu[0]+mid,lu[1]+mid)) and issquare((lu[0],lu[1]+mid,lu[0]+mid,rd[1])) and issquare((lu[0]+mid,lu[1],rd[0],lu[1]+mid)) and issquare((lu[0]+mid,lu[1]+mid,rd[0],rd[1]))
+        
+        return dic[ordtuple]
+
+    def check(n):
+        for i in range(len(board)-n+1):
+            for j in range(len(board[0])-n+1):
+                if issquare((i,j,i+n-1,j+n-1)):
+                    return True
+        return False
+
+    start = 0; end = max(len(board), len(board[0])); mid = 0
+    while True:
+        mid = int((start+end) / 2)
+        if start >= end:
+            # print(dic)
+            return (mid) ** 2
+        else:
+            if check(mid):
+                start = mid+1
+            else:
+                end = mid
+    
 print(solution(	[[0, 0], [1, 1]] ), 1)
 print(solution(	[[0, 0, 1, 1], [1, 1, 1, 1]] ), 4)
+print(solution(	[[0, 1, 1, 1], [1, 1, 1, 1], [0, 1, 1, 1]] ), 9)
 print(solution(	[[0, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 1, 0]] ), 9)
+print(solution(	[[0, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0]] ), 16)
+print(solution(	[[1]*10]*10 ), 10**2)
+print(solution(	[[1]*100]*100 ), 100**2)
+print(solution(	[[1]*200]*200 ), 200**2)
+print(solution(	[[1]*500]*500 ), 500**2)
+print(solution(	[[1]*1000]*1000 ), 1000**2)
