@@ -66,7 +66,7 @@ def solution3(sticker):
     print(dic)
     return answer
 
-def solution(sticker):
+def solution4(sticker):
     maxvalue = 0
     dic = {frozenset([i]): sticker[i] for i in range(len(sticker))}
 
@@ -86,5 +86,61 @@ def solution(sticker):
     print(dic)
     return maxvalue
 
+def solution(sticker):
+
+    def circular(idx):
+        if idx < 0:
+            return idx + len(sticker)
+        elif idx >= len(sticker):
+            return idx - len(sticker)
+        else:
+            return idx
+
+    def returnkey(key, rotate):
+        return (circular(key[0]+rotate), circular(key[1]+rotate))
+
+    
+    def pol(l):
+        return l[1] - (l[0]+l[2])
+
+    dic = {}
+    for i in range(len(sticker)):
+        start, end = i, i+2
+        if end < len(sticker):
+            dic[(start, end)] = pol(sticker[start:end+1])
+        else:
+            dic[(start, end-len(sticker))] = pol(sticker[start:] + sticker[:end-len(sticker)+1])
+
+    print(dic, sticker)
+
+    total = 0
+    leftsticker = {x for x in dic.keys()}
+    while leftsticker:
+        maxidx = max(leftsticker, key=dic.__getitem__)
+        print(maxidx)
+
+        l2, l1, c, r1, r2 = (circular(maxidx[0]-2), circular(maxidx[1]-2)), (circular(maxidx[0]-1), circular(maxidx[1]-1)), (maxidx[0], maxidx[1]), (circular(maxidx[0]+1), circular(maxidx[1]+1)), (circular(maxidx[0]+2), circular(maxidx[1]+2))
+        
+        total += sticker[circular(maxidx[0]+1)]
+        sticker[circular(maxidx[0])] = 0
+        sticker[circular(maxidx[0]+1)] = 0
+        sticker[circular(maxidx[0]+2)] = 0
+        leftsticker.discard(maxidx)
+        leftsticker.discard(returnkey(maxidx, -1))
+        leftsticker.discard(returnkey(maxidx, 1))
+
+        for p in l2, l1, c, r1, r2:
+            if p[0]>p[1]:
+                temp=[]
+                for idx in list(range(p[0], len(sticker))) + list(range(p[1]+1)):
+                    temp += [sticker[idx]]
+                dic[p] = pol(temp)
+            else:
+                dic[p] = sticker[p[0]+1] - (sticker[p[0]] + sticker[p[0]+2])
+
+        print(dic, sticker, total)
+                
+    return total
 
 print(solution([14, 6, 5, 11, 3, 9, 2, 10]), 36)
+print(solution([1, 3, 2, 5, 4]), 8)
