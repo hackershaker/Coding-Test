@@ -7,9 +7,9 @@ def solution(n, info):
     # pprint(maxanswer)
     if len(maxanswer)==0: return [-1]
     else:
-        maxanswer = sorted(maxanswer, key = cmp_to_key(compare))
+        maxanswer = sorted(list(zip(*maxanswer))[0], key = cmp_to_key(compare))
         print(maxanswer)
-        return maxanswer[0][0]
+        return maxanswer[0]
 
 def calculate(i, lion, answer, n, info):
         # print(lion)
@@ -37,12 +37,12 @@ def calculate(i, lion, answer, n, info):
         calculate(i+1, lion[:i] + [min(remainarrow, info[i]+1)] + lion[i+1:], answer, n, info)
 
 def compare(x, y):
-        for i in reversed(range(len(x))):
-            if x[i] < y[i]:
-                return -1
-            elif x[i] > y[i]:
-                return 1
-            else:
-                continue
+    for i in reversed(range(len(x))):
+        if x[i] > y[i]:
+            return -1
+        elif x[i] < y[i]:
+            return 1
+        else:
+            continue
 
-        return 0
+    return 0
