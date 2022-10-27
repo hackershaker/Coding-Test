@@ -42,5 +42,27 @@ class testClass(TestCase):
         self.assertEqual(p86052.reflect((0,1), (0,-1), ["LSR", "SLR", "LRS"]), ((0,0), (0,-1)))
         self.assertEqual(p86052.reflect((0,1), (1,0), ["LSR", "SLR", "LRS"]), ((2,1), (1,0)))
         self.assertEqual(p86052.reflect((0,1), (-1,0), ["LSR", "SLR", "LRS"]), ((1,1), (-1,0)))
+
+    def testsolution(self):
+        testcase = [
+            (["SL", "LR"], [16]),
+            (["S"], [1, 1, 1, 1]),
+            (["R", "R"], [4, 4]),
+            (["R", "R"], [4, 4]),
+            (["LSR"], [1,1,4,6]),
+            (["LS"], [1,1,6]),
+        ]
+        for grid, answer in testcase:
+            result = p86052.testsolution(grid)
+            for path in result:
+                for r in path:
+                    print(r[0], end=' ')
+                    if r[1] == (1,0): print("ᐱ", end=" ")
+                    if r[1] == (-1,0): print("ᐯ", end=" ")
+                    if r[1] == (0,1): print("ᐳ", end=" ")
+                    if r[1] == (0,-1): print("ᐸ", end=" ")
+                print("\n")
+            self.assertEqual(p86052.solution(grid), answer, f"{grid}, {answer}")
+            print("===================================================================")
 if __name__=="__main__":
     main()
