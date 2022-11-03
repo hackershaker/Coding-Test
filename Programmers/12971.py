@@ -87,60 +87,53 @@ def solution4(sticker):
     return maxvalue
 
 def solution(sticker):
+    answer = 0
+    totalsum = sum(sticker)
+    prior = [(idx, value) for idx, value in enumerate(sticker)]
+    prior.sort(key=lambda x: -x[1])
 
-    def circular(idx):
-        if idx < 0:
-            return idx + len(sticker)
-        elif idx >= len(sticker):
-            return idx - len(sticker)
-        else:
-            return idx
-
-    def returnkey(key, rotate):
-        return (circular(key[0]+rotate), circular(key[1]+rotate))
-
-    
-    def pol(l):
-        return l[1] - (l[0]+l[2])
-
-    dic = {}
-    for i in range(len(sticker)):
-        start, end = i, i+2
-        if end < len(sticker):
-            dic[(start, end)] = pol(sticker[start:end+1])
-        else:
-            dic[(start, end-len(sticker))] = pol(sticker[start:] + sticker[:end-len(sticker)+1])
-
-    print(dic, sticker)
-
-    total = 0
-    leftsticker = {x for x in dic.keys()}
-    while leftsticker:
-        maxidx = max(leftsticker, key=dic.__getitem__)
-        print(maxidx)
-
-        l2, l1, c, r1, r2 = (circular(maxidx[0]-2), circular(maxidx[1]-2)), (circular(maxidx[0]-1), circular(maxidx[1]-1)), (maxidx[0], maxidx[1]), (circular(maxidx[0]+1), circular(maxidx[1]+1)), (circular(maxidx[0]+2), circular(maxidx[1]+2))
+    stack = [[prior, 0, sticker, sum(sticker)]]
+    while stack:
+        part, s, stic, total = stack.pop()
         
-        total += sticker[circular(maxidx[0]+1)]
-        sticker[circular(maxidx[0])] = 0
-        sticker[circular(maxidx[0]+1)] = 0
-        sticker[circular(maxidx[0]+2)] = 0
-        leftsticker.discard(maxidx)
-        leftsticker.discard(returnkey(maxidx, -1))
-        leftsticker.discard(returnkey(maxidx, 1))
+        if total == 0:
+            answer = max(answer, s)
+            break
+        
+        # print(part, s, total, stic)
+        maxinfo = part[0]
 
-        for p in l2, l1, c, r1, r2:
-            if p[0]>p[1]:
-                temp=[]
-                for idx in list(range(p[0], len(sticker))) + list(range(p[1]+1)):
-                    temp += [sticker[idx]]
-                dic[p] = pol(temp)
-            else:
-                dic[p] = sticker[p[0]+1] - (sticker[p[0]] + sticker[p[0]+2])
+        idxs = getIdx(maxinfo[0], stic)
+        tearSticker = stic[idxs[1]] + stic[idxs[0]] + stic[idxs[2]]
+        center = stic[idxs[1]]
+        # sticker[idxs[1]] , sticker[idxs[0]] , sticker[idxs[2]] = 0, 0, 0
+        stack.append([deleteList(idxs,part), s + center, zeroSticker(idxs, stic),total - tearSticker])
+        if stic[idxs[1]] <= stic[idxs[0]]+stic[idxs[2]]:
+            subidxs = getIdx(idxs[0], part)
+            tearSticker = stic[subidxs[1]] + stic[subidxs[0]] + stic[subidxs[2]]
+            center = stic[subidxs[1]]
+            # sticker[subidxs[1]] , sticker[subidxs[0]] , sticker[subidxs[2]] = 0, 0, 0
+            stack.append([deleteList(subidxs,part), s + center, zeroSticker(subidxs, stic), total - tearSticker])
 
-        print(dic, sticker, total)
-                
-    return total
+    return answer
 
-print(solution([14, 6, 5, 11, 3, 9, 2, 10]), 36)
-print(solution([1, 3, 2, 5, 4]), 8)
+def getIdx(idx, part):
+    leftidx = (idx-1+len(part))%len(part)
+    rightidx = (idx+1)%len(part)
+
+    return leftidx, idx, rightidx
+
+def deleteList(indexes, l):
+    newlist = [x for x in l if x[0] not in indexes]
+    return newlist
+
+def zeroSticker(indexes, sticker):
+    part = [sticker[i] if i not in indexes else 0 for i in range(len(sticker))]
+    return part
+
+
+print(solution([14, 6, 5, 11, 3, 9, 2, 10]), 36) # 6, 11, 9, 10
+print(solution([14, 6, 9, 11, 10, 5, 11, 10]), 36) # 6, 11, 9, 10
+print(solution([1, 3, 2, 5, 4]), 8) # 3, 5
+print(solution([4,3,2,1,2,3,4]), 9) # 4, 2, 3
+print(solution([4,3,2,1,3,2,4]), 10) # 4, 3, 3
