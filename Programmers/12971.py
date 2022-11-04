@@ -133,8 +133,7 @@ def zeroSticker(indexes, sticker):
 
 from collections import deque
 def solution(sticker):
-    priorlist = deque(sorted([(idx, value) for idx, value in enumerate(sticker)], key=lambda x: -x[1]))
-    print(priorlist)
+    priorlist = deque(sorted([(idx, value) for idx, value in enumerate(sticker)], key=lambda x: (-x[1], x[0])))
     answer = 0
     
     while True:
