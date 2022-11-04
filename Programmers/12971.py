@@ -86,7 +86,7 @@ def solution4(sticker):
     print(dic)
     return maxvalue
 
-def solution(sticker):
+def solution5(sticker):
     answer = 0
     totalsum = sum(sticker)
     prior = [(idx, value) for idx, value in enumerate(sticker)]
@@ -130,6 +130,42 @@ def deleteList(indexes, l):
 def zeroSticker(indexes, sticker):
     part = [sticker[i] if i not in indexes else 0 for i in range(len(sticker))]
     return part
+
+from collections import deque
+def solution(sticker):
+    priorlist = deque(sorted([(idx, value) for idx, value in enumerate(sticker)], key=lambda x: -x[1]))
+    print(priorlist)
+    answer = 0
+    
+    while True:
+        total = 0; stickerlist = []
+        dic = {str(x[0]):x[1] for x in priorlist}
+        for piece in priorlist:
+            if len(dic) == 0: break
+            if dic.get(str(piece[0]), 0) == 0:
+                continue
+            total += piece[1]
+            stickerlist.append(piece[1])
+            if piece[0] == 0:
+                dic.pop("0", None)
+                dic.pop(str(len(sticker)-1), None)
+                dic.pop(str("1"), None)
+            elif piece[0] == len(sticker)-1:
+                dic.pop(str(len(sticker)-2), None)
+                dic.pop(str(len(sticker)-1), None)
+                dic.pop(str("0"), None)
+            else:
+                dic.pop(str(piece[0]), None)
+                dic.pop(str(piece[0]+1), None)
+                dic.pop(str(piece[0]-1), None)
+        
+        print(total, stickerlist)
+        if total > answer:
+            answer = total
+            priorlist.rotate(-1)
+        else:
+            return answer
+
 
 
 print(solution([14, 6, 5, 11, 3, 9, 2, 10]), 36) # 6, 11, 9, 10
