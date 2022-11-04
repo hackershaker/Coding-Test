@@ -1,3 +1,5 @@
+# need testcode
+
 if __name__=="__main__":
     n, m = map(int, input().split(" "))
     ground = []
@@ -26,5 +28,3 @@ if __name__=="__main__":
                 continue
             else:
                 stack.append(path + [point])
-
-    
