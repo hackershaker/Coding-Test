@@ -85,33 +85,18 @@ def solution3(board): # Dynamic Programming & Binary search
                 end = mid
 
 def solution(board):
-    dic = {}
-    def rowsum(row, col1, col2):
-        if dic.get((row, col1, col2), None):
-            return dic.get((row, col1, col2))
+    prefixSum = [[0 for _ in range(len(board[0])+1)] for _ in range(len(board)+1)]
 
-        total = 0
-        stack = [(col1, col2)]
-        while stack:
-            c1, c2 = stack.pop()
-            if dic.get((row, c1, c2), None) is not None:
-                total += dic[(row, c1, c2)]
-            elif c1 == c2:
-                dic[(row, c1, c2)] = board[row][c1]
-                total += dic[(row, c1, c2)]
-            else:
-                mid = int((c1+c2) / 2)
-                stack.extend([(c1, mid), (mid+1, c2)])
-        
-        dic[(row, col1, col2)] = total
-        return total
+    for i in range(1, len(board)+1):
+        for j in range(1, len(board[0])+1):
+            prefixSum[i][j] = prefixSum[i-1][j] + prefixSum[i][j-1] + board[i-1][j-1] - prefixSum[i-1][j-1]
 
-    def issquare(ordtuple: tuple) -> bool:
-        for row in range(ordtuple[0], ordtuple[2]+1):
-            if sum(board[row][ordtuple[1]:ordtuple[3]+1]) != ordtuple[3]-ordtuple[1]+1:
-                return False
-        else:
-            return True
+    def getSum(points):
+        lur, luc, rdr, rdc = points
+        total = prefixSum[rdr+1][rdc+1] - prefixSum[rdr+1][luc] - prefixSum[lur][rdc+1] + prefixSum[lur][luc]
+        if total != (rdr-lur+1) * (rdc-luc+1):
+            return False
+        return True
 
     maxlen = 0
 
@@ -120,22 +105,32 @@ def solution(board):
             poslen = min(len(board)-i, len(board[0])-j)
             if poslen <= maxlen:
                 continue
-            else:
-                if issquare((i, j, i+poslen-1, j+poslen-1)):
-                    maxlen = poslen
+            
+            start = maxlen; end = poslen; mid = 0
+            while True:
+                mid = int((start+end) / 2)
+                if start == end:
+                    if getSum((i, j, i+start-1, j+start-1)):
+                        maxlen = max(maxlen, start)
+                    break
+                else:
+                    if getSum((i, j, i+mid-1, j+mid-1)):
+                        maxlen = max(maxlen, mid)
+                        start = mid+1
+                    else:
+                        end = mid
                 
     return maxlen ** 2
     
-print(solution(	[[0, 0], [1, 1]] ), 1)
-print(solution(	[[0, 0, 1, 1], [1, 1, 1, 1]] ), 4)
-print(solution(	[[0, 1, 1, 1], [1, 1, 1, 1], [0, 1, 1, 1]] ), 9)
-print(solution(	[[0, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 1, 0]] ), 9)
-print(solution(	[[0, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0]] ), 16)
-print(solution(	[[1]*10]*10 ), 10**2)
-print(solution(	[[1]*100]*100 ), 100**2)
-print(solution(	[[1]*200]*200 ), 200**2)
-print(solution(	[[1]*500]*500 ), 500**2)
-print(solution(	[[1]*500]*1000 ), 500**2)
-print(solution(	[[1]*1000]*1000 ), 1000**2)
-print(solution(	[[0]*1000]*1000 ), 0)
-print(solution(	[[[1,0]*500], [[0,1]*500]]*500 ), 1)
+# print(solution(	[[1, 1, 1, 0, 0], [1, 1, 1, 0, 0], [1, 1, 1, 1, 1], [0, 0, 1, 1, 1], [0, 0, 1, 0, 0]] ), 9)
+# print(solution(	[[0, 0, 1, 1], [1, 1, 1, 1]] ), 4)
+# print(solution(	[[0, 1, 1, 1], [1, 1, 1, 1], [0, 1, 1, 1]] ), 9)
+# print(solution(	[[0, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [0, 0, 1, 0]] ), 9)
+# print(solution(	[[0, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0], [1, 1, 1, 1, 0]] ), 16)
+# print(solution(	[[1]*10]*10 ), 10**2)
+# print(solution(	[[1]*100]*100 ), 100**2)
+# print(solution(	[[1]*200]*200 ), 200**2)
+# print(solution(	[[1]*500]*500 ), 500**2)
+# print(solution(	[[1]*500]*1000 ), 500**2)
+# print(solution(	[[1]*1000]*1000 ), 1000**2)
+# print(solution(	[[0]*1000]*1000 ), 0)
