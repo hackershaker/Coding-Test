@@ -1,0 +1,45 @@
+from typing import List
+from collections import deque
+from functools import reduce
+
+
+class Solution:
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        if not set(word).issubset(set(sum(board, []))):
+            return False
+
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == word[0]:
+                    stack = deque([[(i, j)]])
+                    while stack:
+                        currentWord = stack.popleft()
+                        if len(currentWord) == len(word):
+                            return True
+
+                        lastCharacter = currentWord[-1]
+                        u, d, r, l = (1, 0), (0, 1), (-1, 0), (0, -1)
+
+                        for next in [u, d, r, l]:
+                            if (
+                                0 <= lastCharacter[0] + next[0] < len(board)
+                                and 0 <= lastCharacter[1] + next[1] < len(board[0])
+                                and board[lastCharacter[0]+next[0]][lastCharacter[1]+next[1]]
+                                == word[len(currentWord)]
+                                and (
+                                    lastCharacter[0] + next[0],
+                                    lastCharacter[1] + next[1],
+                                )
+                                not in currentWord
+                            ):
+                                stack.append(
+                                    currentWord
+                                    + [
+                                        (
+                                            lastCharacter[0] + next[0],
+                                            lastCharacter[1] + next[1],
+                                        )
+                                    ]
+                                )
+
+        return False
