@@ -1,59 +1,17 @@
-from heapq import heappop, heappush
-from itertools import count
-
-
 def solution(sticker):
-    answer = 0
-    heap = []
-    entryFinder = {}
-    counter = count()
-    REMOVED = "<removed-task>"
+    def checkMaxSum(start: int, end: int, array: list):
+        dic = {(start,start):sticker[start], (start, start+1): max(sticker[start], sticker[start+1])}
 
-    for i in range(len(sticker)):
-        id = next(counter)
-        heappush(
-            heap, [sticker[i - 1] + sticker[(i + 1) % len(sticker)], -sticker[i], i, id]
-        )
-        entryFinder[i] = [id, '']
+        for i in range(start+2, end+1):
+            dic[(start, i)] = max(dic[(start, i-2)] + sticker[i], dic[(start, i-1)])
 
-    while heap:
-        # print(heap)
-        # print(entryFinder)
-        entry = heappop(heap)
-        if entryFinder[entry[2]][-1] == REMOVED:
-            continue
-        
-        answer -= entry[1]  
-        idx = entry[2]
-        sticker[idx - 1], sticker[idx], sticker[(idx + 1) % len(sticker)] = 0, 0, 0
-        entryFinder[idx][-1] = REMOVED
-        (
-            entryFinder[(idx - 1 + len(sticker)) % len(sticker)][-1],
-            entryFinder[(idx + 1) % len(sticker)][-1],
-        ) = (REMOVED, REMOVED)
-        (
-            entryFinder[(idx - 2 + len(sticker)) % len(sticker)][-1],
-            entryFinder[(idx + 2) % len(sticker)][-1],
-        ) = (REMOVED, REMOVED)
+        return dic[(start, end)]
 
-        if sticker[idx-2] != 0:
-            id = next(counter)
-            heappush(
-                heap, [sticker[idx - 3] + sticker[idx - 1], -sticker[idx - 2], (idx - 2 + len(sticker)) % len(sticker), id]
-            )
-            entryFinder[(idx - 2 + len(sticker)) % len(sticker)] = [id, '']
-
-        if sticker[(idx + 2) % len(sticker)] != 0:
-            id = next(counter)
-            heappush(
-                heap,
-                [
-                    sticker[(idx + 1) % len(sticker)] + sticker[(idx + 3) % len(sticker)],
-                    -sticker[(idx + 2) % len(sticker)],
-                    (idx + 2) % len(sticker),
-                    id,
-                ],
-            )
-            entryFinder[(idx + 2) % len(sticker)] = [id, '']
-
-    return answer
+    if len(sticker) == 1:
+        return sticker[0]
+    elif 2 <= len(sticker) <= 3:
+        return max(sticker)
+    else:
+        return max(sticker[0] + checkMaxSum(2, len(sticker)-2, sticker), 
+        sticker[1] + checkMaxSum(3, len(sticker)-1, sticker), 
+        sticker[-1] + checkMaxSum(1, len(sticker)-3, sticker))
