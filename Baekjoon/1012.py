@@ -5,13 +5,13 @@ def solution() -> list:
     for _ in range(T):
         answer = 0
         m, n, k = map(int, input().split(" "))
-        cabbages = [list(map(int, input().split(" "))) for _ in range(k)]
+        cabbages = {tuple(map(int, input().split(" ")))[::-1] for _ in range(k)}
         testPoint = set()
 
-        for i in range(m):
-            for j in range(n):
+        for i in range(n):
+            for j in range(m):
                 if (i,j) in testPoint: continue
-                if cabbages[i][j] == 1:
+                if (i,j) in cabbages:
                     stack = {(i,j)}
                     while stack:
                         point = stack.pop()
@@ -20,7 +20,7 @@ def solution() -> list:
                         for p in u,d,r,l:
                             x = point[0]+p[0]
                             y = point[1]+p[1]
-                            if 0 <= x < m and 0 <= y < m and cabbages[x][y] == 1 and (x,y) not in stack:
+                            if 0 <= x < n and 0 <= y < m and (x,y) in cabbages and (x,y) not in testPoint:
                                 stack.add((x,y))
                     answer += 1
         
